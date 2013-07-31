@@ -1,0 +1,66 @@
+#ifndef __LOGGER__
+#define __LOGGER__
+
+#include <ctime>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <stdexcept>
+#include <cstdio>
+
+#define LOGGER_NAMESPACE_BEGIN namespace lgr {
+#define LOGGER_NAMESPACE_END   }
+
+LOGGER_NAMESPACE_BEGIN
+
+typedef enum { LOGLEVEL_ERROR = 3, LOGLEVEL_WARN = 2, LOGLEVEL_INFO = 1, LOGLEVEL_DEBUG = 0 } LogLevel;
+
+class Logger : public std::stringstream
+{
+public:
+    Logger(LogLevel loglevel, const char* moduleName, const char* filename, const char* function, int lineNumber);
+    void printMsg();
+
+    static LogLevel getLogLevel();
+    static void setLogLevel(LogLevel loglevel);
+
+private:
+    LogLevel _loglevel;
+    int _lineNumber;
+    const char* _filename;
+    const char* _moduleName;
+    const char* _function;
+};
+
+class ProgressBar : public std::stringstream
+{
+public:
+    ProgressBar(LogLevel loglevel, const char* moduleName, const char* filename, const char* function, int lineNumber);
+    void setProgress(int curr, int total);
+    void printMsg();
+
+private:
+    LogLevel _loglevel;
+    int _lineNumber;
+    const char* _filename;
+    const char* _moduleName;
+    const char* _function;
+
+    int _currentProgress, _totalProgress;
+};
+
+// #define LOG_MSG(level, msg) { \
+//         Logger logger(level, __FILE__, __LINE__); \
+//         logger << msg; \
+//         logger.printMsg(); \
+//     }
+
+// #define LOG_ERROR(msg) LOG_MSG(LOGLEVEL_ERROR, msg)
+// #define LOG_WARN(msg)  LOG_MSG(LOGLEVEL_WARN, msg)
+// #define LOG_INFO(msg)  LOG_MSG(LOGLEVEL_INFO, msg)
+// #define LOG_DEBUG(msg) LOG_MSG(LOGLEVEL_DEBUG, msg)
+// #define LOG_EXPR(msg)  LOG_DEBUG(#msg << " = " << (msg))
+
+LOGGER_NAMESPACE_END
+
+#endif // __LOGGER__
