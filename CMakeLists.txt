@@ -19,9 +19,10 @@
 # OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-PROJECT(CommandLineCore)
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(CommandLineCore)
+SUBDIRS(test)
 
 # Boost
 FIND_PACKAGE( Boost COMPONENTS timer system REQUIRED )
@@ -34,7 +35,10 @@ SET(CLC_SOURCES
     logger logger.cpp 
     timer timer.cpp
     autotimer autotimer.cpp
+    optparser optparser.cpp
     )
+
+SET(CLC_LIBS ${Boost_LIBRARIES} )
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Build a universal binary
@@ -58,16 +62,12 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     )
 ELSE()
   ADD_LIBRARY(clc SHARED ${CLC_SOURCES})
+  TARGET_LINK_LIBRARIES(clc ${CLC_LIBS})
   
   INSTALL_FILES(/include/clc/ logger timer)
   INSTALL_TARGETS(/lib clc)
   #INSTALL_TARGETS(/lib RUNTIME_DIRECTORY /bin SharedLibraryTarget)
 ENDIF()
-
-SET(CLC_LIBS ${Boost_LIBRARIES} )
-
-ADD_EXECUTABLE( test test.cpp )
-TARGET_LINK_LIBRARIES( test clc ${CLC_LIBS} )
 
 # Generating the .pc file for pkg-config
 CONFIGURE_FILE("clc.pc.in" "${CMAKE_BINARY_DIR}/clc.pc" @ONLY IMMEDIATE)
