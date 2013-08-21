@@ -1,0 +1,30 @@
+#ifndef __TIMER_HPP__
+#define __TIMER_HPP__
+
+// Project includes
+#include "clc"
+
+CLC_NAMESPACE_BEGIN
+
+/// Reports wall time
+class Timer
+{
+public:
+    Timer();
+
+    void start();
+    void stop();
+    void resume();
+
+    bool isStopped() const;
+
+    double timeInSeconds();
+    int64_t timeInNanoSeconds();
+
+private:
+    boost::timer::cpu_timer _timer;
+};
+
+CLC_NAMESPACE_END
+
+#endif // __TIMER_HPP__

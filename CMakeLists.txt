@@ -19,46 +19,56 @@
 # OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-PROJECT(Logger)
+PROJECT(CommandLineCore)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
+# Boost
+FIND_PACKAGE( Boost COMPONENTS timer system REQUIRED )
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+
 INCLUDE_DIRECTORIES(".")
+
+SET(CLC_SOURCES 
+    clc
+    logger logger.cpp 
+    timer timer.cpp
+    autotimer autotimer.cpp
+    )
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Build a universal binary
   SET( CMAKE_OSX_ARCHITECTURES x86_64;i386 )
 
   # The framework
-  ADD_LIBRARY( Logger 
-    SHARED 
-    logger  logger.cpp)
+  ADD_LIBRARY( CommandLineCore SHARED ${CLC_SOURCES})
 
   # MacOS Framework
-  SET_TARGET_PROPERTIES( Logger PROPERTIES
+  SET_TARGET_PROPERTIES( CommandLineCore PROPERTIES
     FRAMEWORK TRUE
     FRAMEWORK_VERSION none
     PUBLIC_HEADER "logger" 
     DEBUG_POSTIFX -d
     )
   
-  INSTALL(TARGETS Logger
+  INSTALL(TARGETS CommandLineCore
     FRAMEWORK DESTINATION Library/Frameworks
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     )
 ELSE()
-  ADD_LIBRARY(logger SHARED
-    logger.cpp)
+  ADD_LIBRARY(clc SHARED ${CLC_SOURCES})
   
-  INSTALL_FILES(/include/Logger/  logger)
-  INSTALL_TARGETS(/lib logger)
+  INSTALL_FILES(/include/clc/ logger timer)
+  INSTALL_TARGETS(/lib clc)
   #INSTALL_TARGETS(/lib RUNTIME_DIRECTORY /bin SharedLibraryTarget)
 ENDIF()
 
+SET(CLC_LIBS ${Boost_LIBRARIES} )
+
 ADD_EXECUTABLE( test test.cpp )
-TARGET_LINK_LIBRARIES( test logger )
+TARGET_LINK_LIBRARIES( test clc ${CLC_LIBS} )
 
 # Generating the .pc file for pkg-config
-CONFIGURE_FILE("logger.pc.in" "${CMAKE_BINARY_DIR}/logger.pc" @ONLY IMMEDIATE)
-INSTALL(FILES ${CMAKE_BINARY_DIR}/logger.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
+CONFIGURE_FILE("clc.pc.in" "${CMAKE_BINARY_DIR}/clc.pc" @ONLY IMMEDIATE)
+INSTALL(FILES ${CMAKE_BINARY_DIR}/clc.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)

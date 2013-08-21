@@ -7,67 +7,27 @@
 
 #include "logger"
 
-LOGGER_NAMESPACE_BEGIN
+CLC_NAMESPACE_BEGIN
 
-Logger::Logger(LogLevel loglevel, const char* moduleName, const char* filename, const char* function, int lineNumber):
-    _loglevel(loglevel),
-    _moduleName(moduleName),
-    _filename(filename),
-    _function(function),
-    _lineNumber(lineNumber)
-{
-}
-
+static
 void
-Logger::printMsg()
+printFormattedMessage(LogLevel loglevel,
+                      const std::string& moduleName,
+                      const std::string& filename,
+                      const std::string& function,
+                      int lineNumber,
+                      const std::string& message)
 {
-    if(_loglevel >= getLogLevel()) {
-        std::string level = (_loglevel == LOGLEVEL_INFO)  ? "INFO  " :
-                            (_loglevel == LOGLEVEL_WARN)  ? "WARN  " :
-                            (_loglevel == LOGLEVEL_DEBUG) ? "DEBUG " :
-                            "ERROR ";
+    const char* level = (loglevel == LOGLEVEL_INFO)  ? "INFO  " :
+                        (loglevel == LOGLEVEL_WARN)  ? "WARN  " :
+                        (loglevel == LOGLEVEL_DEBUG) ? "DEBUG " :
+                        "ERROR ";
 
-        char datetime[128];
-        time_t theTime = std::time(NULL);
-        strftime(datetime, sizeof(datetime), "%Y-%m-%d %H:%M:%S ", std::localtime(&theTime));
+    char datetime[128];
+    time_t theTime = std::time(NULL);
+    strftime(datetime, sizeof(datetime), "%Y-%m-%d %H:%M:%S ", std::localtime(&theTime));
 
-        std::cout << "[" << _moduleName << "] " << datetime << level << " " << this->str() << std::endl;
-    }
-
-    if(_loglevel == LOGLEVEL_ERROR) throw std::runtime_error(this->str());
-}
-
-// TODO set this based on compilation flags
-static LogLevel _minLogLevel = LOGLEVEL_DEBUG;
-
-LogLevel
-Logger::getLogLevel()
-{
-    return _minLogLevel;
-}
-
-void
-Logger::setLogLevel(LogLevel loglevel)
-{
-    _minLogLevel = loglevel;
-}
-
-ProgressBar::ProgressBar(LogLevel loglevel, const char* moduleName, const char* filename, const char* function, int lineNumber):
-    _loglevel(loglevel),
-    _moduleName(moduleName),
-    _filename(filename),
-    _function(function),
-    _lineNumber(lineNumber),
-    _currentProgress(0),
-    _totalProgress(0)
-{
-}
-
-void
-ProgressBar::setProgress(int curr, int total)
-{
-    _currentProgress = curr;
-    _totalProgress = total;
+    std::cout << "[" << moduleName << "] " << datetime << level << " " << message << std::endl;
 }
 
 static
@@ -77,22 +37,118 @@ round(double x)
     return (int) (x + 0.5);
 }
 
+Logger* Logger::s_inst = NULL;
+LogLevel Logger::s_minLogLevelPrint = LOGLEVEL_INFO;
+LogLevel Logger::s_minLogLevelError = LOGLEVEL_ERROR;
+
 void
-ProgressBar::printMsg()
+Logger::init()
 {
-    const char* spin = "-\\|/";
-
-    const int BAR_LENGTH = 30;
-    int percent = round(double(BAR_LENGTH) * double(_currentProgress) / _totalProgress);
-
-    std::stringstream msg;
-
-    msg << "[";
-    for(int i = 0; i < percent; i++) msg << "=";
-    for(int i = percent; i < BAR_LENGTH; i++) msg << " ";
-    msg << "]\r";
-    printf(msg.str().c_str());
-    fflush(stdout);
+    s_inst = new Logger();
 }
 
-LOGGER_NAMESPACE_END
+void
+Logger::deinit()
+{
+    if(s_inst != NULL) delete s_inst;
+}
+
+Logger::Logger():
+    m_ticks(0)
+{
+
+}
+
+std::ostream&
+Logger::startProgressBar(LogLevel logLevel)
+{
+    m_logLevel = logLevel;
+    m_progBarWidth = 0;
+    m_progbarDone = false;
+    m_msg.str("");
+    m_timer.start();
+
+    return m_msg;
+}
+
+void
+Logger::updateProgressBar(int curr, int total,
+                          const std::string& moduleName, const std::string& filename,
+                          const std::string& function, int lineNumber)
+{
+    if(m_progbarDone) return;
+    double totalTime = m_timer.timeInSeconds();
+
+    m_ticks++;
+
+    const char spin[] = {'-', '\\', '|', '/'};
+    const int BAR_LENGTH = 30;
+    const int PERC_WIDTH = 3;
+
+    float complete = double(curr) / total;
+
+    // If we're done, then clear the progress bar
+    if(curr >= total - 1) {
+        m_progbarDone = true;
+
+        // Clean up progress bar before printing final message
+        for(int i = 0; i < m_progBarWidth; i++) std::cout << " ";
+        std::cout << "\r";
+
+        std::stringstream msg;
+        msg << m_msg.str() << " ("
+            << std::setprecision(3) << std::fixed << std::showpoint
+            << totalTime << " sec)";
+
+        printFormattedMessage(m_logLevel, moduleName, filename, function, lineNumber, msg.str());
+    } else {
+        int barFill = round(double(BAR_LENGTH) * complete);
+
+        std::stringstream progBar;
+
+        double eta = (total - curr) * totalTime / curr;
+
+        progBar << spin[m_ticks % sizeof(spin)];
+        progBar << "[";
+        for(int i = 0; i < barFill; i++) progBar << "=";
+        for(int i = barFill; i < BAR_LENGTH; i++) progBar << " ";
+        progBar << "]"
+                << " " << std::setw(PERC_WIDTH) << round(complete * 100.0) << "% "
+                << " " << m_msg.str()
+                << " ("
+                << std::setprecision(3) << std::fixed << std::showpoint
+                << totalTime << " sec";
+
+        if(curr == 0) progBar << ")";
+        else {
+            progBar << ", ETA: "
+                    << std::setprecision(3) << std::fixed << std::showpoint
+                    << eta << "sec)";
+        }
+
+        int padding = (m_progBarWidth - progBar.str().size() - 1);
+        for(int i = 0; i < padding; i++) progBar << " ";
+
+        progBar << "\r";
+
+        std::cout << progBar.str() << std::flush;
+        m_progBarWidth = progBar.str().size();
+        //std::cout << m_progBarWidth << std::endl;
+    }
+}
+
+void
+Logger::printMessage(LogLevel loglevel,
+                     const std::string& moduleName,
+                     const std::string& filename,
+                     const std::string& function,
+                     int lineNumber) const
+{
+    if(loglevel >= s_minLogLevelPrint) {
+        printFormattedMessage(loglevel, moduleName, filename, function, lineNumber, m_msg.str());
+    }
+
+    if(loglevel >= s_minLogLevelError) throw std::runtime_error(m_msg.str());
+}
+
+CLC_NAMESPACE_END

@@ -1,0 +1,21 @@
+#ifndef __CLC__
+#define __CLC__
+
+// Standard library
+#include <ctime>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <stdexcept>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <iomanip>
+
+// Boost
+#include <boost/timer/timer.hpp>
+
+#define CLC_NAMESPACE_BEGIN namespace clc {
+#define CLC_NAMESPACE_END   }
+
+#endif // __CLC__

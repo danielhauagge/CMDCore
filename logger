@@ -1,52 +1,59 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
-#include <ctime>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <stdexcept>
-#include <cstdio>
+#include "clc"
+#include "timer"
 
-#define LOGGER_NAMESPACE_BEGIN namespace lgr {
-#define LOGGER_NAMESPACE_END   }
-
-LOGGER_NAMESPACE_BEGIN
+CLC_NAMESPACE_BEGIN
 
 typedef enum { LOGLEVEL_ERROR = 3, LOGLEVEL_WARN = 2, LOGLEVEL_INFO = 1, LOGLEVEL_DEBUG = 0 } LogLevel;
 
-class Logger : public std::stringstream
+class Logger
 {
 public:
-    Logger(LogLevel loglevel, const char* moduleName, const char* filename, const char* function, int lineNumber);
-    void printMsg();
+    static void init();
+    static void deinit();
 
-    static LogLevel getLogLevel();
-    static void setLogLevel(LogLevel loglevel);
+    static Logger* getInstance() {
+        assert(s_inst != NULL);
+        s_inst;
+    }
 
-private:
-    LogLevel _loglevel;
-    int _lineNumber;
-    const char* _filename;
-    const char* _moduleName;
-    const char* _function;
-};
-
-class ProgressBar : public std::stringstream
-{
 public:
-    ProgressBar(LogLevel loglevel, const char* moduleName, const char* filename, const char* function, int lineNumber);
-    void setProgress(int curr, int total);
-    void printMsg();
+    Logger();
+
+    std::ostream& setMessage() {
+        m_msg.str("");
+        return m_msg;
+    }
+
+    void printMessage(LogLevel loglevel,
+                      const std::string& moduleName,
+                      const std::string& filename,
+                      const std::string& function,
+                      int lineNumber) const;
+
+    std::ostream& startProgressBar(LogLevel logLevel);
+    void updateProgressBar(int curr, int total,
+                           const std::string& moduleName, const std::string& filename,
+                           const std::string& function, int lineNumber);
 
 private:
-    LogLevel _loglevel;
-    int _lineNumber;
-    const char* _filename;
-    const char* _moduleName;
-    const char* _function;
+    static Logger* s_inst;
+    static LogLevel s_minLogLevelPrint, s_minLogLevelError;
 
-    int _currentProgress, _totalProgress;
+    std::stringstream m_msg;
+
+    std::string m_moduleName;
+    std::string m_filename;
+    std::string m_function;
+    int m_lineNumber;
+    LogLevel m_logLevel;
+
+    int m_progBarWidth;
+    bool m_progbarDone;
+    int m_ticks;
+    Timer m_timer;
 };
 
 // #define LOG_MSG(level, msg) { \
@@ -61,6 +68,6 @@ private:
 // #define LOG_DEBUG(msg) LOG_MSG(LOGLEVEL_DEBUG, msg)
 // #define LOG_EXPR(msg)  LOG_DEBUG(#msg << " = " << (msg))
 
-LOGGER_NAMESPACE_END
+CLC_NAMESPACE_END
 
 #endif // __LOGGER__
