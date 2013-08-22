@@ -5,7 +5,7 @@
 int
 main(int argc, const char** argv)
 {
-    using namespace clc;
+    using namespace cmdc;
 
     OptionParser::Arguments args;
     OptionParser::Options opts;

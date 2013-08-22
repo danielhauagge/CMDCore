@@ -7,5 +7,5 @@ Name: Command Line Core
 Description: Library with classes usefull for command line applications
 Version: 0
 Requires: 
-Libs: -L${libdir} -lclc
+Libs: -L${libdir} -lcmdcore
 Cflags: -I${includedir} 

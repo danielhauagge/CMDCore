@@ -19,8 +19,8 @@
 // OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef __CLC__
-#define __CLC__
+#ifndef __CMD_CORE__
+#define __CMD_CORE__
 
 // Standard library
 #include <cassert>
@@ -40,7 +40,14 @@
 // Boost
 #include <boost/timer/timer.hpp>
 
-#define CLC_NAMESPACE_BEGIN namespace clc {
-#define CLC_NAMESPACE_END   }
+#define CMDC_NAMESPACE_BEGIN namespace cmdc {
+#define CMDC_NAMESPACE_END   }
 
-#endif // __CLC__
+CMDC_NAMESPACE_BEGIN
+
+void init();
+void deinit();
+
+CMDC_NAMESPACE_END
+
+#endif // __CMD_CORE__

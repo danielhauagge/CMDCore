@@ -23,9 +23,9 @@
 #define __TIMER_HPP__
 
 // Project includes
-#include "clc"
+#include "cmdcore"
 
-CLC_NAMESPACE_BEGIN
+CMDC_NAMESPACE_BEGIN
 
 /// Reports wall time
 class Timer
@@ -46,6 +46,6 @@ private:
     boost::timer::cpu_timer _timer;
 };
 
-CLC_NAMESPACE_END
+CMDC_NAMESPACE_END
 
 #endif // __TIMER_HPP__

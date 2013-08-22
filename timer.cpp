@@ -1,6 +1,6 @@
 #include "timer"
 
-CLC_NAMESPACE_BEGIN
+CMDC_NAMESPACE_BEGIN
 
 // ****************************************************************************
 // * Timer                                                                    *
@@ -49,4 +49,4 @@ Timer::timeInNanoSeconds()
     return int64_t(elapsed.wall);
 }
 
-CLC_NAMESPACE_END
+CMDC_NAMESPACE_END

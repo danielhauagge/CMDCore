@@ -22,9 +22,9 @@
 #ifndef __OPTION_PARSER__
 #define __OPTION_PARSER__
 
-#include "clc"
+#include "cmdcore"
 
-CLC_NAMESPACE_BEGIN
+CMDC_NAMESPACE_BEGIN
 
 class OptionParser
 {
@@ -112,6 +112,6 @@ private:
     std::stringstream _flagHelp;
 };
 
-CLC_NAMESPACE_END
+CMDC_NAMESPACE_END
 
 #endif // __OPTION_PARSER__

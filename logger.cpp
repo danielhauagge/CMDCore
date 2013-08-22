@@ -7,7 +7,7 @@
 
 #include "logger"
 
-CLC_NAMESPACE_BEGIN
+CMDC_NAMESPACE_BEGIN
 
 static
 void
@@ -67,6 +67,7 @@ Logger::startProgressBar(LogLevel logLevel)
     m_progbarDone = false;
     m_msg.str("");
     m_timer.start();
+    m_prevBarFill = -1;
 
     return m_msg;
 }
@@ -109,31 +110,37 @@ Logger::updateProgressBar(int curr, int total,
         double eta = (total - curr) * totalTime / curr;
 
         progBar << spin[m_ticks % sizeof(spin)];
-        progBar << "[";
-        for(int i = 0; i < barFill; i++) progBar << "=";
-        for(int i = barFill; i < BAR_LENGTH; i++) progBar << " ";
-        progBar << "]"
-                << " " << std::setw(PERC_WIDTH) << round(complete * 100.0) << "% "
-                << " " << m_msg.str()
-                << " ("
-                << std::setprecision(3) << std::fixed << std::showpoint
-                << totalTime << " sec";
 
-        if(curr == 0) progBar << ")";
-        else {
-            progBar << ", ETA: "
+        if(m_prevBarFill != barFill) {
+
+            progBar << "[";
+            for(int i = 0; i < barFill; i++) progBar << "=";
+            for(int i = barFill; i < BAR_LENGTH; i++) progBar << " ";
+            progBar << "]"
+                    << " " << std::setw(PERC_WIDTH) << round(complete * 100.0) << "% "
+                    << " " << m_msg.str()
+                    << " ("
                     << std::setprecision(3) << std::fixed << std::showpoint
-                    << eta << "sec)";
+                    << totalTime << " sec";
+
+            if(curr == 0) progBar << ")";
+            else {
+                progBar << ", ETA: "
+                        << std::setprecision(3) << std::fixed << std::showpoint
+                        << eta << " sec)";
+            }
+
+            int padding = (m_progBarWidth - progBar.str().size() - 1);
+            for(int i = 0; i < padding; i++) progBar << " ";
+            m_progBarWidth = progBar.str().size() + 1;
         }
 
-        int padding = (m_progBarWidth - progBar.str().size() - 1);
-        for(int i = 0; i < padding; i++) progBar << " ";
-
         progBar << "\r";
-
         std::cout << progBar.str() << std::flush;
-        m_progBarWidth = progBar.str().size();
         //std::cout << m_progBarWidth << std::endl;
+
+        m_prevBarFill = barFill;
+
     }
 }
 
@@ -151,4 +158,4 @@ Logger::printMessage(LogLevel loglevel,
     if(loglevel >= s_minLogLevelError) throw std::runtime_error(m_msg.str());
 }
 
-CLC_NAMESPACE_END
+CMDC_NAMESPACE_END

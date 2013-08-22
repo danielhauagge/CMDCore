@@ -30,22 +30,22 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 INCLUDE_DIRECTORIES(".")
 
-SET(CLC_SOURCES 
-    clc
+SET(CMDC_SOURCES 
+    cmdcore cmdcore.cpp
     logger logger.cpp 
     timer timer.cpp
     autotimer autotimer.cpp
     optparser optparser.cpp
     )
 
-SET(CLC_LIBS ${Boost_LIBRARIES} )
+SET(CMDC_LIBS ${Boost_LIBRARIES} )
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Build a universal binary
   SET( CMAKE_OSX_ARCHITECTURES x86_64;i386 )
 
   # The framework
-  ADD_LIBRARY( CommandLineCore SHARED ${CLC_SOURCES})
+  ADD_LIBRARY( CommandLineCore SHARED ${CMDC_SOURCES})
 
   # MacOS Framework
   SET_TARGET_PROPERTIES( CommandLineCore PROPERTIES
@@ -61,14 +61,14 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     ARCHIVE DESTINATION lib
     )
 ELSE()
-  ADD_LIBRARY(clc SHARED ${CLC_SOURCES})
-  TARGET_LINK_LIBRARIES(clc ${CLC_LIBS})
+  ADD_LIBRARY(cmdcore SHARED ${CMDC_SOURCES})
+  TARGET_LINK_LIBRARIES(cmdcore ${CMDC_LIBS})
   
-  INSTALL_FILES(/include/clc/ logger timer)
-  INSTALL_TARGETS(/lib clc)
+  INSTALL_FILES(/include/cmdcore/ FILES logger timer optparser cmdcore)
+  INSTALL_TARGETS(/lib cmdcore)
   #INSTALL_TARGETS(/lib RUNTIME_DIRECTORY /bin SharedLibraryTarget)
 ENDIF()
 
 # Generating the .pc file for pkg-config
-CONFIGURE_FILE("clc.pc.in" "${CMAKE_BINARY_DIR}/clc.pc" @ONLY IMMEDIATE)
-INSTALL(FILES ${CMAKE_BINARY_DIR}/clc.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
+CONFIGURE_FILE("cmdcore.pc.in" "${CMAKE_BINARY_DIR}/cmdcore.pc" @ONLY IMMEDIATE)
+INSTALL(FILES ${CMAKE_BINARY_DIR}/cmdcore.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)

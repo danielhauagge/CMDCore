@@ -21,7 +21,7 @@
 
 #include "optparser"
 
-CLC_NAMESPACE_BEGIN
+CMDC_NAMESPACE_BEGIN
 
 #define PRINT_EXPR(expr) std::cout << "[optparse] " << __LINE__ << ": "<< #expr << " = " << (expr) << std::endl
 #define PRINT_MSG(msg) std::cout << "[optparse] " << msg << std::endl
@@ -388,4 +388,4 @@ OptionParser::printHelp() const
     }
 }
 
-CLC_NAMESPACE_END
+CMDC_NAMESPACE_END

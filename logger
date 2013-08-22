@@ -22,10 +22,10 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
-#include "clc"
+#include "cmdcore"
 #include "timer"
 
-CLC_NAMESPACE_BEGIN
+CMDC_NAMESPACE_BEGIN
 
 typedef enum { LOGLEVEL_ERROR = 3, LOGLEVEL_WARN = 2, LOGLEVEL_INFO = 1, LOGLEVEL_DEBUG = 0 } LogLevel;
 
@@ -75,6 +75,7 @@ private:
     bool m_progbarDone;
     int m_ticks;
     Timer m_timer;
+    int m_prevBarFill;
 };
 
 // #define LOG_MSG(level, msg) { \
@@ -89,6 +90,6 @@ private:
 // #define LOG_DEBUG(msg) LOG_MSG(LOGLEVEL_DEBUG, msg)
 // #define LOG_EXPR(msg)  LOG_DEBUG(#msg << " = " << (msg))
 
-CLC_NAMESPACE_END
+CMDC_NAMESPACE_END
 
 #endif // __LOGGER__

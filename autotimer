@@ -2,11 +2,11 @@
 #define __AUTO_TIMER__
 
 // Project includes
-#include "clc"
+#include "cmdcore"
 #include "logger"
 #include "timer"
 
-CLC_NAMESPACE_BEGIN
+CMDC_NAMESPACE_BEGIN
 
 /// Prints time (in seconds) between constructor and destructor call
 class AutoTimer : public Timer
@@ -29,6 +29,6 @@ private:
     int m_lineNumber;
 };
 
-CLC_NAMESPACE_END
+CMDC_NAMESPACE_END
 
 #endif // __AUTO_TIMER__
