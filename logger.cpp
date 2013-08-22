@@ -68,6 +68,7 @@ Logger::startProgressBar(LogLevel logLevel)
     m_msg.str("");
     m_timer.start();
     m_prevBarFill = -1;
+    m_timePrevUpdate = -100;
 
     return m_msg;
 }
@@ -79,8 +80,6 @@ Logger::updateProgressBar(int curr, int total,
 {
     if(m_progbarDone) return;
     double totalTime = m_timer.timeInSeconds();
-
-    m_ticks++;
 
     const char spin[] = {'-', '\\', '|', '/'};
     const int BAR_LENGTH = 30;
@@ -105,13 +104,17 @@ Logger::updateProgressBar(int curr, int total,
     } else {
         int barFill = round(double(BAR_LENGTH) * complete);
 
+        double timeBetweenCalls = totalTime - m_timePrevUpdate;
+        if(timeBetweenCalls < 0.2) return;
+        m_timePrevUpdate = totalTime;
+        m_ticks++;
+
+
         std::stringstream progBar;
-
-        double eta = (total - curr) * totalTime / curr;
-
         progBar << spin[m_ticks % sizeof(spin)];
 
         if(m_prevBarFill != barFill) {
+            double eta = (total - curr) * totalTime / curr;
 
             progBar << "[";
             for(int i = 0; i < barFill; i++) progBar << "=";

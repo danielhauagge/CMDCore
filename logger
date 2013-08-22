@@ -76,6 +76,7 @@ private:
     int m_ticks;
     Timer m_timer;
     int m_prevBarFill;
+    double m_timePrevUpdate;
 };
 
 // #define LOG_MSG(level, msg) { \
