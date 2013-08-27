@@ -31,11 +31,11 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(".")
 
 SET(CMDC_SOURCES 
-    cmdcore cmdcore.cpp
-    logger logger.cpp 
-    timer timer.cpp
-    autotimer autotimer.cpp
-    optparser optparser.cpp
+    CMDCore/cmdcore cmdcore.cpp
+    CMDCore/logger logger.cpp 
+    CMDCore/timer timer.cpp
+    CMDCore/autotimer autotimer.cpp
+    CMDCore/optparser optparser.cpp
     )
 
 SET(CMDC_LIBS ${Boost_LIBRARIES} )
@@ -53,12 +53,12 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   SET_TARGET_PROPERTIES( CMDCore PROPERTIES
     FRAMEWORK TRUE
     FRAMEWORK_VERSION Current
-    PUBLIC_HEADER "logger" 
+    PUBLIC_HEADER "CMDCore/logger;CMDCore/cmdcore;CMDCore/autotimer;CMDCore/optparser;CMDCore/timer" 
     DEBUG_POSTIFX -d
     )
   
   INSTALL(TARGETS CMDCore
-    FRAMEWORK DESTINATION /Library/Frameworks
+    FRAMEWORK DESTINATION "/Library/Frameworks"
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     )
@@ -68,7 +68,7 @@ ELSE()
   ADD_LIBRARY(cmdcore SHARED ${CMDC_SOURCES})
   TARGET_LINK_LIBRARIES(cmdcore ${CMDC_LIBS})
   
-  INSTALL_FILES(/include/cmdcore/ FILES logger timer optparser cmdcore)
+  INSTALL_FILES(/include/CMDCore FILES CMDCore/cmdcore CMDCore/timer CMDCore/autotimer CMDCore/optparser CMDCore/logger)
   INSTALL_TARGETS(/lib cmdcore)
   #INSTALL_TARGETS(/lib RUNTIME_DIRECTORY /bin SharedLibraryTarget)
 

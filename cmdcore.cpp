@@ -1,5 +1,5 @@
-#include "cmdcore"
-#include "logger"
+#include "CMDCore/cmdcore"
+#include "CMDCore/logger"
 
 CMDC_NAMESPACE_BEGIN
 

@@ -3,10 +3,10 @@
 #include <iostream>
 #include <unistd.h>
 
-#include <cmdcore>
-#include <logger>
-#include <timer>
-#include <autotimer>
+#include <CMDCore/cmdcore>
+#include <CMDCore/logger>
+#include <CMDCore/timer>
+#include <CMDCore/autotimer>
 
 #define LOG_ERROR(msg) LOG_MSG(cmdc::LOGLEVEL_ERROR, msg)
 #define LOG_WARN(msg)  LOG_MSG(cmdc::LOGLEVEL_WARN, msg)

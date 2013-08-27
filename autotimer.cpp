@@ -1,4 +1,4 @@
-#include "autotimer"
+#include "CMDCore/autotimer"
 
 CMDC_NAMESPACE_BEGIN
 

@@ -5,7 +5,7 @@
 //  Copyright (c) 2012 Cornell University. All rights reserved.
 //
 
-#include "logger"
+#include "CMDCore/logger"
 
 CMDC_NAMESPACE_BEGIN
 
