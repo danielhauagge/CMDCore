@@ -37,7 +37,7 @@ public:
 
     static Logger* getInstance() {
         assert(s_inst != NULL);
-        s_inst;
+        return s_inst;
     }
 
 public:

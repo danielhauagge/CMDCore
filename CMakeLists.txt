@@ -42,24 +42,28 @@ SET(CMDC_LIBS ${Boost_LIBRARIES} )
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Build a universal binary
-  SET( CMAKE_OSX_ARCHITECTURES x86_64;i386 )
+  #SET( CMAKE_OSX_ARCHITECTURES x86_64;i386 )
+  SET( CMAKE_OSX_ARCHITECTURES x86_64 )
 
   # The framework
-  ADD_LIBRARY( CommandLineCore SHARED ${CMDC_SOURCES})
+  ADD_LIBRARY( CMDCore SHARED ${CMDC_SOURCES})
+  TARGET_LINK_LIBRARIES(CMDCore ${CMDC_LIBS})
 
   # MacOS Framework
-  SET_TARGET_PROPERTIES( CommandLineCore PROPERTIES
+  SET_TARGET_PROPERTIES( CMDCore PROPERTIES
     FRAMEWORK TRUE
-    FRAMEWORK_VERSION none
+    FRAMEWORK_VERSION Current
     PUBLIC_HEADER "logger" 
     DEBUG_POSTIFX -d
     )
   
-  INSTALL(TARGETS CommandLineCore
-    FRAMEWORK DESTINATION Library/Frameworks
+  INSTALL(TARGETS CMDCore
+    FRAMEWORK DESTINATION /Library/Frameworks
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     )
+
+  SET(CMDC_LIBNAME CMDCore)
 ELSE()
   ADD_LIBRARY(cmdcore SHARED ${CMDC_SOURCES})
   TARGET_LINK_LIBRARIES(cmdcore ${CMDC_LIBS})
@@ -67,8 +71,11 @@ ELSE()
   INSTALL_FILES(/include/cmdcore/ FILES logger timer optparser cmdcore)
   INSTALL_TARGETS(/lib cmdcore)
   #INSTALL_TARGETS(/lib RUNTIME_DIRECTORY /bin SharedLibraryTarget)
+
+  SET(CMDC_LIBNAME cmdcore)
+
+  # Generating the .pc file for pkg-config
+  CONFIGURE_FILE("cmdcore.pc.in" "${CMAKE_BINARY_DIR}/cmdcore.pc" @ONLY IMMEDIATE)
+  INSTALL(FILES ${CMAKE_BINARY_DIR}/cmdcore.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 ENDIF()
 
-# Generating the .pc file for pkg-config
-CONFIGURE_FILE("cmdcore.pc.in" "${CMAKE_BINARY_DIR}/cmdcore.pc" @ONLY IMMEDIATE)
-INSTALL(FILES ${CMAKE_BINARY_DIR}/cmdcore.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)

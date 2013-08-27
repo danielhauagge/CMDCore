@@ -50,7 +50,8 @@ Logger::init()
 void
 Logger::deinit()
 {
-    if(s_inst != NULL) delete s_inst;
+    // if(s_inst != NULL) delete s_inst;
+    // s_inst = NULL;
 }
 
 Logger::Logger():

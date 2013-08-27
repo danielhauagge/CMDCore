@@ -44,6 +44,6 @@ main(int argc, char const* argv[])
 
     LOG_INFO("After the progress bar");
 
-    deinit();
+    cmdc::deinit();
     return 0;
 }
