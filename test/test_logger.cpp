@@ -44,6 +44,13 @@ main(int argc, char const* argv[])
 
     LOG_INFO("After the progress bar");
 
+    LOG_INFO("Shoudl not print debug message next");
+    LOG_DEBUG("This should not print");
+    LOG_INFO("Changing log level to debug, should see a debug message next");
+    cmdc::Logger::setLogLevels(cmdc::LOGLEVEL_DEBUG);
+    LOG_DEBUG("This should print");
+
+
     cmdc::deinit();
     return 0;
 }

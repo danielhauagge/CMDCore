@@ -42,9 +42,17 @@ LogLevel Logger::s_minLogLevelPrint = LOGLEVEL_INFO;
 LogLevel Logger::s_minLogLevelError = LOGLEVEL_ERROR;
 
 void
-Logger::init()
+Logger::init(LogLevel minPrint, LogLevel minError)
 {
-    s_inst = new Logger();
+    if(s_inst == NULL) s_inst = new Logger();
+    s_minLogLevelPrint = minPrint;
+    s_minLogLevelError = minError;
+}
+
+void
+Logger::setLogLevels(LogLevel minPrint, LogLevel minError)
+{
+    init(minPrint, minError);
 }
 
 void
@@ -88,11 +96,11 @@ Logger::updateProgressBar(int curr, int total,
 
     float complete = double(curr) / total;
 
-    // If we're done, then clear the progress bar
+    // If we're done, then clear the progress bar, print the final message + time to complete
     if(curr >= total - 1) {
         m_progbarDone = true;
 
-        // Clean up progress bar before printing final message
+        // Erase progress bar before printing final message
         for(int i = 0; i < m_progBarWidth; i++) std::cout << " ";
         std::cout << "\r";
 
@@ -141,10 +149,8 @@ Logger::updateProgressBar(int curr, int total,
 
         progBar << "\r";
         std::cout << progBar.str() << std::flush;
-        //std::cout << m_progBarWidth << std::endl;
 
         m_prevBarFill = barFill;
-
     }
 }
 
