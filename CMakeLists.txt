@@ -65,14 +65,14 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
   SET(CMDC_LIBNAME CMDCore)
 ELSE()
-  ADD_LIBRARY(cmdcore SHARED ${CMDC_SOURCES})
-  TARGET_LINK_LIBRARIES(cmdcore ${CMDC_LIBS})
+  ADD_LIBRARY(CMDCore SHARED ${CMDC_SOURCES})
+  TARGET_LINK_LIBRARIES(CMDCore ${CMDC_LIBS})
   
   INSTALL_FILES(/include/CMDCore FILES CMDCore/cmdcore CMDCore/timer CMDCore/autotimer CMDCore/optparser CMDCore/logger)
-  INSTALL_TARGETS(/lib cmdcore)
+  INSTALL_TARGETS(/lib CMDCore)
   #INSTALL_TARGETS(/lib RUNTIME_DIRECTORY /bin SharedLibraryTarget)
 
-  SET(CMDC_LIBNAME cmdcore)
+  SET(CMDC_LIBNAME CMDCore)
 
   # Generating the .pc file for pkg-config
   CONFIGURE_FILE("cmdcore.pc.in" "${CMAKE_BINARY_DIR}/cmdcore.pc" @ONLY IMMEDIATE)
