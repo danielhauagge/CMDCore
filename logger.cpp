@@ -37,30 +37,32 @@ round(double x)
     return (int) (x + 0.5);
 }
 
-Logger* Logger::s_inst = NULL;
-LogLevel Logger::s_minLogLevelPrint = LOGLEVEL_INFO;
+//Logger* Logger::s_inst = NULL;
+LogLevel Logger::s_minLogLevelPrint = LOGLEVEL_WARN;
 LogLevel Logger::s_minLogLevelError = LOGLEVEL_ERROR;
 
-void
-Logger::init(LogLevel minPrint, LogLevel minError)
-{
-    if(s_inst == NULL) s_inst = new Logger();
-    s_minLogLevelPrint = minPrint;
-    s_minLogLevelError = minError;
-}
+// void
+// Logger::init(LogLevel minPrint, LogLevel minError)
+// {
+//     // if(s_inst == NULL) s_inst = new Logger();
+//     s_minLogLevelPrint = minPrint;
+//     s_minLogLevelError = minError;
+// }
 
 void
 Logger::setLogLevels(LogLevel minPrint, LogLevel minError)
 {
-    init(minPrint, minError);
+    s_minLogLevelPrint = minPrint;
+    assert(minError <= LOGLEVEL_NOPRINTING);
+    s_minLogLevelError = minError;
 }
 
-void
-Logger::deinit()
-{
-    // if(s_inst != NULL) delete s_inst;
-    // s_inst = NULL;
-}
+// void
+// Logger::deinit()
+// {
+//     // if(s_inst != NULL) delete s_inst;
+//     // s_inst = NULL;
+// }
 
 Logger::Logger():
     m_ticks(0)
@@ -87,6 +89,8 @@ Logger::updateProgressBar(int curr, int total,
                           const std::string& moduleName, const std::string& filename,
                           const std::string& function, int lineNumber)
 {
+    if(m_logLevel < s_minLogLevelPrint) return;
+
     if(m_progbarDone) return;
     double totalTime = m_timer.timeInSeconds();
 

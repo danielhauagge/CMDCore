@@ -27,19 +27,20 @@
 
 CMDC_NAMESPACE_BEGIN
 
-typedef enum { LOGLEVEL_ERROR = 3, LOGLEVEL_WARN = 2, LOGLEVEL_INFO = 1, LOGLEVEL_DEBUG = 0 } LogLevel;
+typedef enum { LOGLEVEL_NOPRINTING = 4, LOGLEVEL_ERROR = 3, LOGLEVEL_WARN = 2, LOGLEVEL_INFO = 1, LOGLEVEL_DEBUG = 0 } LogLevel;
 
 class Logger
 {
 public:
-    static void init(LogLevel minPrint = LOGLEVEL_INFO, LogLevel minError = LOGLEVEL_ERROR);
-    static void deinit();
+    // static void init(LogLevel minPrint = LOGLEVEL_INFO, LogLevel minError = LOGLEVEL_ERROR);
+    // static void deinit();
 
     static void setLogLevels(LogLevel minPrint, LogLevel minError = LOGLEVEL_ERROR);
 
     static Logger* getInstance() {
-        assert(s_inst != NULL);
-        return s_inst;
+        //assert(s_inst != NULL);
+        static Logger s_inst;
+        return &s_inst;
     }
 
 public:
@@ -62,7 +63,7 @@ public:
                            const std::string& function, int lineNumber);
 
 private:
-    static Logger* s_inst;
+    //static Logger* s_inst;
 
     // Above which level should we print
     static LogLevel s_minLogLevelPrint;

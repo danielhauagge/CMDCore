@@ -28,7 +28,8 @@ int
 main(int argc, char const* argv[])
 {
     using namespace cmdc;
-    cmdc::init();
+    //cmdc::init();
+    cmdc::Logger::setLogLevels(cmdc::LOGLEVEL_INFO);
 
     TIMER("Total time");
 
@@ -50,7 +51,6 @@ main(int argc, char const* argv[])
     cmdc::Logger::setLogLevels(cmdc::LOGLEVEL_DEBUG);
     LOG_DEBUG("This should print");
 
-
-    cmdc::deinit();
-    return 0;
+    // cmdc::deinit();
+    return EXIT_SUCCESS;
 }

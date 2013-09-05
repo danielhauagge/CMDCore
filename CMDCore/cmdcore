@@ -45,8 +45,8 @@
 
 CMDC_NAMESPACE_BEGIN
 
-void init();
-void deinit();
+// void init();
+// void deinit();
 
 CMDC_NAMESPACE_END
 
